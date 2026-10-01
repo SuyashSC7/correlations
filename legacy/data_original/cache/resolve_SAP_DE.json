@@ -1,0 +1,11 @@
+{
+  "query": "SAP.DE",
+  "symbol": "SAP.DE",
+  "name": "SAP.DE",
+  "exchange": "GER",
+  "currency": "EUR",
+  "quote_type": "EQUITY",
+  "last_price": 186.05999755859375,
+  "candidates": [],
+  "method": "direct-symbol"
+}

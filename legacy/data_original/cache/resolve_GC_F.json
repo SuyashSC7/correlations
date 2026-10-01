@@ -1,0 +1,11 @@
+{
+  "query": "GC=F",
+  "symbol": "GC=F",
+  "name": "GC=F",
+  "exchange": "CMX",
+  "currency": "USD",
+  "quote_type": "FUTURE",
+  "last_price": 4184.7001953125,
+  "candidates": [],
+  "method": "direct-symbol"
+}

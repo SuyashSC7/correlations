@@ -1,0 +1,42 @@
+{
+  "query": "tata motors",
+  "symbol": "TMPV.NS",
+  "name": "Tata Motors Passenger Vehicles Limited",
+  "exchange": "NSE",
+  "currency": "INR",
+  "quote_type": "EQUITY",
+  "last_price": 283.5,
+  "candidates": [
+    {
+      "symbol": "TMPV.NS",
+      "name": "Tata Motors Passenger Vehicles Limited",
+      "exchange": "NSE",
+      "quote_type": "EQUITY"
+    },
+    {
+      "symbol": "TMCV.NS",
+      "name": "Tata Motors Limited",
+      "exchange": "NSE",
+      "quote_type": "EQUITY"
+    },
+    {
+      "symbol": "TMCV-BL.NS",
+      "name": "TATA MOTORS LIMITED",
+      "exchange": "NSE",
+      "quote_type": "EQUITY"
+    },
+    {
+      "symbol": "TMPV.BO",
+      "name": "Tata Motors Passenger Vehicles Limited",
+      "exchange": "Bombay",
+      "quote_type": "EQUITY"
+    },
+    {
+      "symbol": "TMCV.BO",
+      "name": "Tata Motors Limited",
+      "exchange": "Bombay",
+      "quote_type": "EQUITY"
+    }
+  ],
+  "method": "search-fuzzy"
+}

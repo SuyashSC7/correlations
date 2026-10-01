@@ -1,0 +1,11 @@
+{
+  "query": "AAPL",
+  "symbol": "AAPL",
+  "name": "AAPL",
+  "exchange": "NMS",
+  "currency": "USD",
+  "quote_type": "EQUITY",
+  "last_price": 337.6099853515625,
+  "candidates": [],
+  "method": "direct-symbol"
+}

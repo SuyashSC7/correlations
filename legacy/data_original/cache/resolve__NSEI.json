@@ -1,0 +1,11 @@
+{
+  "query": "^NSEI",
+  "symbol": "^NSEI",
+  "name": "^NSEI",
+  "exchange": "NSI",
+  "currency": "INR",
+  "quote_type": "INDEX",
+  "last_price": 22620.44921875,
+  "candidates": [],
+  "method": "direct-symbol"
+}

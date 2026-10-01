@@ -1,0 +1,11 @@
+{
+  "query": "7203.T",
+  "symbol": "7203.T",
+  "name": "7203.T",
+  "exchange": "JPX",
+  "currency": "JPY",
+  "quote_type": "EQUITY",
+  "last_price": 2920.0,
+  "candidates": [],
+  "method": "direct-symbol"
+}

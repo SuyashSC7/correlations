@@ -1,0 +1,11 @@
+{
+  "query": "VOD.L",
+  "symbol": "VOD.L",
+  "name": "VOD.L",
+  "exchange": "LSE",
+  "currency": "GBp",
+  "quote_type": "EQUITY",
+  "last_price": 123.26899719238281,
+  "candidates": [],
+  "method": "direct-symbol"
+}

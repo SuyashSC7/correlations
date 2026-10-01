@@ -1,0 +1,11 @@
+{
+  "query": "RELIANCE.NS",
+  "symbol": "RELIANCE.NS",
+  "name": "RELIANCE.NS",
+  "exchange": "NSI",
+  "currency": "INR",
+  "quote_type": "EQUITY",
+  "last_price": 1187.0,
+  "candidates": [],
+  "method": "direct-symbol"
+}
