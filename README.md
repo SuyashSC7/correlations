@@ -40,14 +40,27 @@ downloads and caches, later runs are offline-fast.
 ## Usage
 
 ```bash
+python correlate.py "tata steel" "hcl"            # two NSE names, no tickers needed
+python correlate.py "hdfc bank" "infosys" --period 2y
 python correlate.py AAPL MSFT                      # symbols
-python correlate.py "hdfc bank" RELIANCE.NS       # company names
 python correlate.py ^NSEI GC=F --base INR          # normalise currencies
 python correlate.py AAPL MSFT --period 5y          # longer window
 python correlate.py AAPL MSFT --freq 1wk           # weekly returns
 python correlate.py VOD.L SAP.DE --json            # machine-readable
 python correlate.py "hdfc bank" --list             # what does this match?
 ```
+
+Plain company names are resolved through Yahoo's search index and prices are
+pulled from Yahoo Finance. Two naming rules:
+
+- A name with no venue of its own (`"hdfc bank"`) prefers the NSE listing
+  (`.NS`), because Yahoo's ranking puts the US ADR or the Bombay line first.
+  A non-Indian name is left alone: `microsoft` stays `MSFT`.
+- A name that carries its own suffix (`RELIANCE.NS`, `7203.T`, `VOD.L`) is taken
+  as written.
+
+The match is always printed, and `--list` shows every candidate when you want to
+choose the listing yourself.
 
 | Option | Default | Effect |
 |---|---|---|

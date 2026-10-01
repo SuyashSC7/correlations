@@ -3,6 +3,7 @@
 correlate.py - correlation analysis for any two instruments.
 
     python correlate.py "tata motors" RELIANCE.NS
+    python correlate.py "tata steel" "hcl"           # two NSE company names
     python correlate.py AAPL MSFT --period 2y
     python correlate.py RELIANCE.NS AAPL --base INR
     python correlate.py VOD.L SAP.DE --json          # machine-readable only

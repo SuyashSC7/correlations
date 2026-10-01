@@ -158,6 +158,24 @@ def quick_info(symbol: str) -> dict:
         return {}
 
 
+def _name_match(query: str, cand: dict) -> float:
+    """Share of query words present in the candidate's company name.
+
+    Coarse on purpose: it only has to separate "this listing is for the company
+    you named" from "this listing happens to carry the suffix".
+    """
+    name = str(cand.get("name") or "").lower()
+    words = [w for w in re.split(r"[^a-z0-9]+", query.lower()) if len(w) > 1]
+    if not words or not name:
+        return 0.0
+    return sum(w in name for w in words) / len(words)
+
+
+def is_nse(symbol: str) -> bool:
+    """True for the Yahoo symbols that quote on NSE (the .NS suffix)."""
+    return str(symbol).upper().endswith(".NS")
+
+
 def _probe(symbol: str, period: str = "5d") -> pd.Series | None:
     try:
         with quiet_yfinance():
@@ -270,7 +288,17 @@ def resolve(query: str, cache_dir: Path | None = None,
             _save(cache_file, res)
             return res
 
-    top = cands[0]
+    # Prefer NSE (.NS) when resolving company names with no explicit exchange
+    # Yahoo's ranking puts the foreign line first whenever one exists ("hdfc bank"
+    # -> HDB, "infosys" -> INFY on the NYSE). For a bare company name we want the
+    # NSE listing, but only when the .NS candidate is really a match for the name
+    # asked about - otherwise "microsoft" would be redirected to an unrelated
+    # .NS line just for carrying the suffix.
+    if any(ch in query for ch in ".=^"):
+        top = cands[0]                       # query names its venue; trust rank
+    else:
+        top = max(cands, key=lambda c: (_name_match(query, c),
+                                        is_nse(c["symbol"])))
     info = quick_info(top["symbol"])
     res = Resolution(query=query, symbol=top["symbol"], name=top["name"],
                      exchange=top["exchange"] or info.get("exchange", ""),
@@ -299,7 +327,19 @@ def resolution_warning(res: Resolution) -> str | None:
     """
     if res.method != "search-fuzzy" or len(res.candidates) < 2:
         return None
-    others = [c for c in res.candidates if str(c["symbol"]) != res.symbol]
+    # NSE is the intended default for Indian listings, so an NSE match needs no
+    # confirmation; a foreign listing picked ahead of it does.
+    if is_nse(res.symbol) and not any(
+            is_nse(str(c["symbol"])) for c in res.candidates
+            if str(c["symbol"]) != res.symbol):
+        return None
+    if is_nse(res.symbol):
+        others = [c for c in res.candidates
+                  if str(c["symbol"]) != res.symbol and not is_nse(str(c["symbol"]))]
+        if not others:
+            return None
+    else:
+        others = [c for c in res.candidates if str(c["symbol"]) != res.symbol]
     venues = {str(c["exchange"]).strip() for c in res.candidates if c["exchange"]}
     if len(venues) > 1:
         alt = ", ".join(f"{c['symbol']} ({c['exchange']})" for c in others[:4])

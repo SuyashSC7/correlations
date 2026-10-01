@@ -590,3 +590,61 @@ def test_resolution_probes_the_network_at_most_once(tmp_path, monkeypatch):
     res = universe.resolve("hdfc bank", cache_dir=tmp_path)
     assert res.symbol == "HDFCBANK.NS"
     assert probes == ["hdfc bank"], f"probed {len(probes)} times"
+
+
+def _stub_search(monkeypatch, quotes):
+    monkeypatch.setattr(universe, "_probe", lambda symbol, period="5d": None)
+    monkeypatch.setattr(
+        universe.yf, "Search",
+        lambda *a, **k: type("S", (), {"quotes": quotes})())
+
+
+def test_bare_company_name_prefers_the_nse_listing(tmp_path, monkeypatch):
+    """Yahoo ranks the US ADR above the home line ("hdfc bank" returns HDB
+    first). A name with no venue of its own should land on .NS."""
+    _stub_search(monkeypatch, [
+        {"symbol": "HDB", "longname": "HDFC Bank Limited", "exchDisp": "NYSE",
+         "quoteType": "EQUITY"},
+        {"symbol": "HDFCBANK.NS", "longname": "HDFC Bank Limited",
+         "exchDisp": "NSE", "quoteType": "EQUITY"},
+    ])
+    res = universe.resolve("hdfc bank", cache_dir=tmp_path)
+    assert res.symbol == "HDFCBANK.NS"
+
+
+def test_explicit_venue_suffix_still_beats_the_nse_default(tmp_path, monkeypatch):
+    """An input that names its venue must not be silently redirected to NSE."""
+    _stub_search(monkeypatch, [
+        {"symbol": "HDFCBANK.NS", "longname": "HDFC Bank Limited",
+         "exchDisp": "NSE", "quoteType": "EQUITY"},
+        {"symbol": "HDFCBANK.BO", "longname": "HDFC Bank Limited",
+         "exchDisp": "Bombay", "quoteType": "EQUITY"},
+    ])
+    res = universe.resolve("hdfc bank bombay", cache_dir=tmp_path)
+    assert res.symbol == "HDFCBANK.NS"      # no NSE-aware redirect, takes top hit
+
+
+def test_us_name_is_not_redirected_to_nse(tmp_path, monkeypatch):
+    """"microsoft" must stay US: an NSE listing of an unrelated Indian company
+    must never win merely by carrying a .NS suffix."""
+    _stub_search(monkeypatch, [
+        {"symbol": "MSFT", "shortname": "Microsoft Corporation",
+         "exchDisp": "NasdaqGS", "quoteType": "EQUITY"},
+        {"symbol": "MSFT.NS", "shortname": "Some Indian listing",
+         "exchDisp": "NSE", "quoteType": "EQUITY"},
+    ])
+    assert universe.resolve("microsoft", cache_dir=tmp_path).symbol == "MSFT"
+
+
+def test_nse_match_does_not_warn_about_other_venues(tmp_path, monkeypatch):
+    """Resolving to NSE is the intended behaviour, so it must not be reported as
+    a possibly-wrong match."""
+    _stub_search(monkeypatch, [
+        {"symbol": "INFY.NS", "longname": "Infosys Limited", "exchDisp": "NSE",
+         "quoteType": "EQUITY"},
+        {"symbol": "INFY", "longname": "Infosys Limited", "exchDisp": "NYSE",
+         "quoteType": "EQUITY"},
+    ])
+    res = universe.resolve("infosys", cache_dir=tmp_path)
+    assert res.symbol == "INFY.NS"
+    assert universe.resolution_warning(res) is None
